@@ -29,7 +29,40 @@ Other than the features already offered by neat-cv, this template introduces the
 
 <a href="assets/letter.png"><img src="assets/letter.png" width="49%"></a>
 
-## Quick Start
+## Using as Typst Package
+
+After published to [Typst Universe](https://typst.app/universe/):
+
+### Initialize a new project
+
+```bash
+typst init @preview/mrbogo-cv
+cd mrbogo-cv
+```
+
+This creates a ready-to-use CV project with placeholder content you can customize.
+
+### Or import in existing project
+
+```typst
+#import "@preview/mrbogo-cv:1.0.0": cv, entry, side, contact-info, social-links
+```
+
+### Build your CV
+
+```bash
+# Build English CV
+typst compile --input lang=en main.typ cv.pdf
+
+# Build cover letter
+typst compile --input lang=en --input letter=example letter.typ letter.pdf
+```
+
+---
+
+## Quick Start (Development)
+
+For developing or customizing the template itself:
 
 ### Prerequisites
 

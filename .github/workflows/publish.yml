@@ -1,0 +1,87 @@
+name: Publish to Typst Packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  prepare-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Validate version format
+        run: |
+          if [[ ! "${{ steps.version.outputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version must be semver format (e.g., 1.0.0)"
+            exit 1
+          fi
+
+      - name: Install Typst
+        uses: typst-community/setup-typst@v4
+
+      - name: Download FontAwesome fonts
+        run: ./setup.sh
+
+      - name: Create package directory structure
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PKG_DIR="packages/preview/mrbogo-cv/$VERSION"
+          mkdir -p "$PKG_DIR"
+
+          cp typst.toml "$PKG_DIR/"
+          cp lib.typ "$PKG_DIR/"
+          cp README.md "$PKG_DIR/"
+          cp LICENSE "$PKG_DIR/"
+          cp -r lib "$PKG_DIR/"
+          cp -r template "$PKG_DIR/"
+          cp thumbnail.png "$PKG_DIR/"
+
+      - name: Update version in package files
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PKG_DIR="packages/preview/mrbogo-cv/$VERSION"
+
+          # Update typst.toml version
+          sed -i "s/^version = .*/version = \"$VERSION\"/" "$PKG_DIR/typst.toml"
+
+          # Update imports in template files
+          find "$PKG_DIR/template" -name "*.typ" -exec \
+            sed -i "s/@preview\/mrbogo-cv:[0-9]\+\.[0-9]\+\.[0-9]\+/@preview\/mrbogo-cv:$VERSION/g" {} \;
+
+      - name: Validate package compiles
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PKG_DIR="packages/preview/mrbogo-cv/$VERSION"
+          cd "$PKG_DIR/template"
+          typst compile --font-path ../../../../fonts main.typ /tmp/test-cv.pdf
+          echo "Package compiles successfully"
+
+      - name: Create package bundle
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          tar -czvf "mrbogo-cv-$VERSION-typst-package.tar.gz" packages/
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: mrbogo-cv-*-typst-package.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print submission instructions
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo ""
+          echo "=== Package Ready for Submission ==="
+          echo "1. Fork https://github.com/typst/packages"
+          echo "2. Extract the bundle and copy packages/preview/mrbogo-cv/$VERSION/"
+          echo "3. Commit: git add . && git commit -m 'mrbogo-cv:$VERSION'"
+          echo "4. Open PR to typst/packages"
