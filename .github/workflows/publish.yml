@@ -231,7 +231,7 @@ jobs:
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'all',
+              state: 'open',
               labels: 'typst-universe'
             });
             const existing = issues.data.find(i => i.title.includes(version));
