@@ -60,9 +60,15 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           PKG_DIR="packages/preview/mrbogo-cv/$VERSION"
-          # Use --root to make Typst find the local package instead of downloading from registry
-          typst compile --root . --font-path fonts "$PKG_DIR/template/main.typ" /tmp/test-cv.pdf
-          typst compile --root . --font-path fonts "$PKG_DIR/template/letter.typ" /tmp/test-letter.pdf
+
+          # Install package locally so Typst can resolve @preview imports
+          LOCAL_PKG_DIR="$HOME/.local/share/typst/packages/preview/mrbogo-cv/$VERSION"
+          mkdir -p "$LOCAL_PKG_DIR"
+          cp -r "$PKG_DIR"/* "$LOCAL_PKG_DIR/"
+
+          # Compile templates
+          typst compile --font-path fonts "$PKG_DIR/template/main.typ" /tmp/test-cv.pdf
+          typst compile --font-path fonts "$PKG_DIR/template/letter.typ" /tmp/test-letter.pdf
           echo "Package compiles successfully"
 
       - name: Create package bundle
