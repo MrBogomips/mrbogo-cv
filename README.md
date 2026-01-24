@@ -22,12 +22,12 @@ Other than the features already offered by neat-cv, this template introduces the
 
 ### CV
 
-<a href="assets/cv_p0.png"><img src="assets/cv_p0.png" width="49%"></a>
-<a href="assets/cv_p1.png"><img src="assets/cv_p1.png" width="49%"></a>
+<a href="https://raw.githubusercontent.com/MrBogomips/mrbogo-cv/main/assets/cv_p0.png"><img src="https://raw.githubusercontent.com/MrBogomips/mrbogo-cv/main/assets/cv_p0.png" width="49%"></a>
+<a href="https://raw.githubusercontent.com/MrBogomips/mrbogo-cv/main/assets/cv_p1.png"><img src="https://raw.githubusercontent.com/MrBogomips/mrbogo-cv/main/assets/cv_p1.png" width="49%"></a>
 
 ### Cover Letter
 
-<a href="assets/letter.png"><img src="assets/letter.png" width="49%"></a>
+<a href="https://raw.githubusercontent.com/MrBogomips/mrbogo-cv/main/assets/letter.png"><img src="https://raw.githubusercontent.com/MrBogomips/mrbogo-cv/main/assets/letter.png" width="49%"></a>
 
 ## Using as Typst Package
 
@@ -88,23 +88,37 @@ cd mrbogo-cv
 
 ### Build Commands
 
-The template uses Typst's `--input` flag to pass compile-time parameters:
+Use the Makefile for easy builds:
+
+```bash
+make                 # Build CV in all languages (en, it)
+make cv              # Same as above
+make cv CV_LANG=en   # Build CV only in English
+
+make letter LETTER=mr-burns              # Build letter in all languages
+make letter LETTER=mr-burns CV_LANG=en   # Build letter only in English
+
+make clean           # Remove output directory
+make help            # Show all available targets
+```
+
+Output files are generated in `output/`:
+- CVs: `output/cv-<lang>.pdf`
+- Letters: `output/letter-<lang>-<name>.pdf`
+
+#### Manual Commands
+
+For more control, use Typst directly with `--input` flags:
 
 ```bash
 # Build English CV
 typst compile --font-path ./fonts --input lang=en cv.typ output/cv-en.pdf
 
-# Build Italian CV
-typst compile --font-path ./fonts --input lang=it cv.typ output/cv-it.pdf
-
-# Build a cover letter
-typst compile --font-path ./fonts --input lang=en --input letter=default letter.typ output/letter.pdf
-
-# Build specific cover letter (e.g., Mr. Burns application)
+# Build specific cover letter
 typst compile --font-path ./fonts --input lang=en --input letter=mr-burns letter.typ output/letter-mr-burns.pdf
 ```
 
-**Command breakdown:**
+**Flag reference:**
 | Flag | Purpose |
 |------|---------|
 | `--font-path ./fonts` | Include FontAwesome icons |
