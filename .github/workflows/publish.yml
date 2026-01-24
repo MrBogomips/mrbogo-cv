@@ -171,6 +171,16 @@ jobs:
           git commit -m "mrbogo-cv:$VERSION"
           git push -u origin "mrbogo-cv-$VERSION" --force
 
+      - name: Check if package exists in Typst Universe
+        id: check-existing
+        run: |
+          cd fork
+          if [ -d "packages/preview/mrbogo-cv" ]; then
+            echo "is_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_update=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create PR
         id: create-pr
         env:
@@ -178,26 +188,45 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           EXISTING_PR_URL: ${{ steps.check-pr.outputs.url }}
           PR_EXISTS: ${{ steps.check-pr.outputs.exists }}
+          IS_UPDATE: ${{ steps.check-existing.outputs.is_update }}
         run: |
           if [ "$PR_EXISTS" == "true" ]; then
             echo "PR already exists: $EXISTING_PR_URL"
             echo "pr_url=$EXISTING_PR_URL" >> $GITHUB_OUTPUT
           else
-            PR_BODY=$(cat <<'EOF'
-          Package submission for mrbogo-cv
+            # Determine submission type checkboxes
+            if [ "$IS_UPDATE" == "true" ]; then
+              NEW_PKG_CHECK="[ ]"
+              UPDATE_CHECK="[x]"
+              DESCRIPTION="Update mrbogo-cv to version $VERSION. See [release notes](https://github.com/MrBogomips/mrbogo-cv/releases/tag/v$VERSION) for changes."
+            else
+              NEW_PKG_CHECK="[x]"
+              UPDATE_CHECK="[ ]"
+              DESCRIPTION="A modern CV/resume template for Typst with content-template separation, multi-language support, and matching cover letter template. Inspired by Awesome CV."
+            fi
 
-          ## Package Information
-          - **Name:** mrbogo-cv
-          - **Version:** $VERSION
-          - **Repository:** https://github.com/MrBogomips/mrbogo-cv
-          - **Release:** https://github.com/MrBogomips/mrbogo-cv/releases/tag/v$VERSION
+            # Build PR body using printf to avoid YAML parsing issues with asterisks
+            PR_BODY=$(printf '%s\n' \
+              "I am submitting" \
+              "" \
+              "- $NEW_PKG_CHECK a new package" \
+              "- $UPDATE_CHECK an update for a package" \
+              "" \
+              "**Description:** $DESCRIPTION" \
+              "" \
+              "I have read and followed the [submission guidelines](https://github.com/typst/packages/blob/main/SUBMISSION_GUIDELINES.md) and, in particular, I" \
+              "" \
+              "- [x] selected a name that isn't the most obvious or canonical name for what the package does" \
+              "- [x] added a \`typst.toml\` file with all required keys" \
+              "- [x] added a \`README.md\` with documentation for my package" \
+              "- [x] have chosen a license and added a \`LICENSE\` file or linked one in my \`README.md\`" \
+              "- [x] tested my package locally on my system and it worked" \
+              "- [x] excluded PDFs or README images, if any, but not the LICENSE" \
+              "- [x] ensured that my package is licensed such that users can use and distribute the contents of its template directory without restriction, after modifying them through normal use." \
+              "" \
+              "---" \
+              "**Package:** [mrbogo-cv](https://github.com/MrBogomips/mrbogo-cv) v$VERSION")
 
-          ---
-          *Automatically submitted by GitHub Actions*
-          EOF
-          )
-            # Substitute VERSION in the body
-            PR_BODY="${PR_BODY//\$VERSION/$VERSION}"
             PR_URL=$(gh pr create \
               --repo typst/packages \
               --base main \
