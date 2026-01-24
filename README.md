@@ -1,5 +1,10 @@
 # mrbogo-cv
 
+[![Release](https://img.shields.io/github/v/release/MrBogomips/mrbogo-cv?style=flat-square)](https://github.com/MrBogomips/mrbogo-cv/releases)
+[![Tests](https://img.shields.io/github/actions/workflow/status/MrBogomips/mrbogo-cv/ci.yml?style=flat-square)](https://github.com/MrBogomips/mrbogo-cv/actions/workflows/ci.yml)
+![License](https://img.shields.io/github/license/MrBogomips/mrbogo-cv?style=flat-square)
+[![Stars](https://img.shields.io/github/stars/MrBogomips/mrbogo-cv?style=flat-square)](https://github.com/MrBogomips/mrbogo-cv/stargazers)
+
 A modern and elegant CV template for Typst, inspired by [Awesome CV](https://github.com/posquit0/Awesome-CV) and based on [neat-cv](https://github.com/dialvarezs/neat-cv).
 
 ## Features
@@ -12,6 +17,17 @@ Other than the features already offered by neat-cv, this template introduces the
 - **Cover Letters** - Matching letter template with the same styling
 - **Theme System** - Change colors in one file; changes propagate everywhere
 - **FontAwesome Icons** - Professional icons for contact info and social links
+
+## Preview
+
+### CV
+
+<a href="assets/cv_p0.png"><img src="assets/cv_p0.png" width="49%"></a>
+<a href="assets/cv_p1.png"><img src="assets/cv_p1.png" width="49%"></a>
+
+### Cover Letter
+
+<a href="assets/letter.png"><img src="assets/letter.png" width="49%"></a>
 
 ## Quick Start
 

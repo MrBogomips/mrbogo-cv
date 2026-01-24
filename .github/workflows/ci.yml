@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Typst
+        uses: typst-community/setup-typst@v4
+
+      - name: Download FontAwesome fonts
+        run: ./setup.sh
+
+      - name: Build English CV
+        run: typst compile --font-path ./fonts --input lang=en cv.typ output/cv-en.pdf
+
+      - name: Build Italian CV
+        run: typst compile --font-path ./fonts --input lang=it cv.typ output/cv-it.pdf
+
+      - name: Build cover letter
+        run: typst compile --font-path ./fonts --input lang=en --input letter=default letter.typ output/letter.pdf
+
+      - name: Verify PDFs generated
+        run: |
+          test -f output/cv-en.pdf && echo "✓ cv-en.pdf generated"
+          test -f output/cv-it.pdf && echo "✓ cv-it.pdf generated"
+          test -f output/letter.pdf && echo "✓ letter.pdf generated"
