@@ -60,8 +60,9 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           PKG_DIR="packages/preview/mrbogo-cv/$VERSION"
-          cd "$PKG_DIR/template"
-          typst compile --font-path ../../../../fonts main.typ /tmp/test-cv.pdf
+          # Use --root to make Typst find the local package instead of downloading from registry
+          typst compile --root . --font-path fonts "$PKG_DIR/template/main.typ" /tmp/test-cv.pdf
+          typst compile --root . --font-path fonts "$PKG_DIR/template/letter.typ" /tmp/test-letter.pdf
           echo "Package compiles successfully"
 
       - name: Create package bundle
