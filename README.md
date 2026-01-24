@@ -45,7 +45,7 @@ This creates a ready-to-use CV project with placeholder content you can customiz
 ### Or import in existing project
 
 ```typst
-#import "@preview/mrbogo-cv:1.0.0": cv, entry, side, contact-info, social-links
+#import "@preview/mrbogo-cv": cv, entry, side, contact-info, social-links
 ```
 
 ### Build your CV
@@ -136,7 +136,7 @@ typst watch --font-path ./fonts --input lang=en cv.typ output/cv-en.pdf
 
 This template improves on traditional CV templates by enforcing strict separation of concerns:
 
-```
+```text
 mrbogo-cv/
 ├── cv.typ                  # Entry point - orchestrates imports
 ├── letter.typ              # Letter entry point
