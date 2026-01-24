@@ -149,6 +149,19 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check if package exists in Typst Universe
+        id: check-existing
+        run: |
+          # Check on main branch (synced with upstream) before we create release branch
+          cd fork
+          if [ -d "packages/preview/mrbogo-cv" ]; then
+            echo "is_update=true" >> $GITHUB_OUTPUT
+            echo "Package already exists in Typst Universe - this is an update"
+          else
+            echo "is_update=false" >> $GITHUB_OUTPUT
+            echo "Package does not exist in Typst Universe - this is a new submission"
+          fi
+
       - name: Create release branch and push
         if: steps.check-pr.outputs.exists != 'true'
         env:
@@ -170,16 +183,6 @@ jobs:
           git add .
           git commit -m "mrbogo-cv:$VERSION"
           git push -u origin "mrbogo-cv-$VERSION" --force
-
-      - name: Check if package exists in Typst Universe
-        id: check-existing
-        run: |
-          cd fork
-          if [ -d "packages/preview/mrbogo-cv" ]; then
-            echo "is_update=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_update=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Create PR
         id: create-pr
