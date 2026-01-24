@@ -20,25 +20,7 @@
     location: "",
     date: "1993",
   )[
-    Badge ottenuti in: Accensione Fuochi, Affilatura Coltelli, e Sopravvivenza nella Natura
-  ]
-
-  #entry(
-    title: "Licenza Vigilante Bartman",
-    institution: "Auto-Certificato",
-    location: "",
-    date: "1991",
-  )[
-    Autorizzato a combattere il crimine a Springfield come alter-ego supereroe mascherato
-  ]
-
-  #entry(
-    title: "Membro Platinum Fan Club Krusty",
-    institution: "Krusty the Clown Enterprises",
-    location: "",
-    date: "1990 - Presente",
-  )[
-    Livello di membership più alto con accesso esclusivo ai richiami di merchandising
+    Badge in: Accensione Fuochi, Affilatura Coltelli e Sopravvivenza nella Natura
   ]
 
   #entry(
@@ -47,6 +29,6 @@
     location: "",
     date: "1994",
   )[
-    Inserito per aver battuto il record di punizioni di sempre precedentemente detenuto da Homer J. Simpson
+    Inserito per aver battuto il record di sempre precedentemente detenuto da Homer J. Simpson
   ]
 ]

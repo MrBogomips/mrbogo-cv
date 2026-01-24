@@ -20,25 +20,7 @@
     location: "",
     date: "1993",
   )[
-    Earned badges in: Fire Starting, Knife Sharpening, and Wilderness Survival
-  ]
-
-  #entry(
-    title: "Bartman Vigilante License",
-    institution: "Self-Certified",
-    location: "",
-    date: "1991",
-  )[
-    Authorized to fight crime in Springfield as masked superhero alter-ego
-  ]
-
-  #entry(
-    title: "Krusty Fan Club Platinum Member",
-    institution: "Krusty the Clown Enterprises",
-    location: "",
-    date: "1990 - Present",
-  )[
-    Highest tier membership with exclusive access to merchandise recalls
+    Badges in: Fire Starting, Knife Sharpening, and Wilderness Survival
   ]
 
   #entry(

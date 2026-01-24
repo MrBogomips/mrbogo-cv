@@ -8,8 +8,9 @@
   email: "elbarto@springfield-elementary.edu",
   phone: "+1 (555) EAT-SHORTS",
   position: "Professional Underachiever",
-  github: "elbarto",
-  twitter: "bartman",
+  github: "MrBogomips/mrbogo-cv",
+  linkedin: "bart-simpson-springfield",
+  twitter: "ElBarto_Springfield",
 )
 
 #let about-me = [

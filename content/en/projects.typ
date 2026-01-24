@@ -11,7 +11,7 @@
     location: "Springfield-wide",
     date: "1990 - Present",
   )[
-    Established citywide brand recognition through strategic spray paint placement. Successfully evaded identification despite extensive investigation by local authorities.
+    Established citywide brand recognition through strategic spray paint placement. Successfully evaded identification despite extensive investigation.
   ]
 
   #entry(
@@ -20,16 +20,7 @@
     location: "Springfield, USA",
     date: "1989 - Present",
   )[
-    Developed extensive library of creative pseudonyms including "Amanda Hugginkiss," "I.P. Freely," and "Hugh Jass." Documented Moe's response patterns for academic purposes.
-  ]
-
-  #entry(
-    title: "The Do What You Feel Festival",
-    institution: "Springfield Community Event",
-    location: "Springfield, USA",
-    date: "1995",
-  )[
-    Contributed to festival concept development. Event successfully disrupted social norms before inevitable chaos ensued.
+    Developed extensive library of creative pseudonyms including "Amanda Hugginkiss" and "I.P. Freely."
   ]
 
   #entry(
@@ -38,15 +29,6 @@
     location: "Springfield, USA",
     date: "1995",
   )[
-    Accidentally discovered a comet while skipping school at the observatory. Comet subsequently threatened Springfield before burning up in atmosphere.
-  ]
-
-  #entry(
-    title: "Operation: Save Krusty",
-    institution: "Krusty Fan Coalition",
-    location: "Springfield, USA",
-    date: "1994",
-  )[
-    Orchestrated successful campaign to prevent Krusty the Clown's show cancellation through strategic manipulation of Nielsen ratings.
+    Accidentally discovered a comet while skipping school. Comet subsequently threatened Springfield before burning up.
   ]
 ]

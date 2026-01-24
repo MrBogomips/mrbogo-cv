@@ -11,7 +11,7 @@
     location: "Colonna Quotidiana",
     date: "1989 - Presente",
   )[
-    Serie in corso che esplora temi di ripetizione, conformismo e autorità istituzionale. Oltre 3.000 righe pubblicate ad oggi.
+    Serie in corso che esplora temi di ripetizione e autorità istituzionale. Oltre 3.000 righe pubblicate.
   ]
 
   #entry(
@@ -20,15 +20,6 @@
     location: "Internet",
     date: "2002",
   )[
-    Ho creato una serie animata virale basata sul padre Homer Simpson. Ha raggiunto milioni di visualizzazioni prima della diffida legale.
-  ]
-
-  #entry(
-    title: "Radioactive Man: Un'Analisi Critica",
-    institution: "Newsletter Android's Dungeon",
-    location: "Negozio del Ragazzo dei Fumetti",
-    date: "1993",
-  )[
-    Recensione completa del numero #1000 di Radioactive Man. Opinione controversa sull'arco narrativo della successione di Fallout Boy.
+    Ho creato una serie animata virale basata sul padre Homer Simpson. Milioni di visualizzazioni prima della diffida.
   ]
 ]
