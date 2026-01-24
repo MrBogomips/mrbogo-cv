@@ -29,7 +29,7 @@ jobs:
         run: typst compile --font-path ./fonts --input lang=it cv.typ output/cv-it.pdf
 
       - name: Build cover letter
-        run: typst compile --font-path ./fonts --input lang=en --input letter=default letter.typ output/letter.pdf
+        run: typst compile --font-path ./fonts --input lang=en --input letter=mr-burns letter.typ output/letter.pdf
 
       - name: Verify PDFs generated
         run: |
