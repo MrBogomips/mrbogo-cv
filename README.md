@@ -92,6 +92,7 @@ Use the Makefile for easy builds:
 
 ```bash
 make                 # Build CV in all languages (en, it)
+make all             # Same as default
 make cv              # Same as above
 make cv CV_LANG=en   # Build CV only in English
 
@@ -105,6 +106,18 @@ make help            # Show all available targets
 Output files are generated in `output/`:
 - CVs: `output/cv-<lang>.pdf`
 - Letters: `output/letter-<lang>-<name>.pdf`
+
+#### Makefile Configuration
+
+The Makefile includes configuration variables that can be customized:
+
+```makefile
+LANGS := en it           # Languages to build by default
+OUTPUT_DIR := output     # Directory for generated PDFs
+FONT_PATH := ./fonts     # Path to FontAwesome fonts
+```
+
+To add a new language to automatic builds, add it to `LANGS` in the Makefile after creating the language content directory (see "Add a New Language" below).
 
 #### Manual Commands
 
@@ -325,6 +338,11 @@ cp -r content/en content/de
 
 # Build German CV
 typst compile --font-path ./fonts --input lang=de cv.typ output/cv-de.pdf
+
+# Or add to Makefile for automatic builds
+# Edit Makefile and add 'de' to LANGS:
+# LANGS := en it de
+# Then run: make cv
 ```
 
 ### 9. Create a Cover Letter
