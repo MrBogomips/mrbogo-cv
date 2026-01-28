@@ -1,0 +1,194 @@
+name: Open PR to Typst Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (e.g., 1.0.5)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      pr_url: ${{ steps.create-pr.outputs.pr_url }}
+      pr_exists: ${{ steps.check-pr.outputs.exists }}
+      is_update: ${{ steps.check-existing.outputs.is_update }}
+    steps:
+      - name: Check if PR already exists
+        id: check-pr
+        env:
+          GH_TOKEN: ${{ secrets.TYPST_PACKAGES_PAT }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          EXISTING_PR=$(gh pr list --repo typst/packages --head "MrBogomips:mrbogo-cv-$VERSION" --json url --jq '.[0].url // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "url=$EXISTING_PR" >> $GITHUB_OUTPUT
+            echo "PR already exists: $EXISTING_PR"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Clone fork
+        if: steps.check-pr.outputs.exists != 'true'
+        env:
+          PAT_TOKEN: ${{ secrets.TYPST_PACKAGES_PAT }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          git clone --depth 1 --branch "mrbogo-cv-$VERSION" \
+            "https://x-access-token:${PAT_TOKEN}@github.com/MrBogomips/typst-packages.git" fork
+
+      - name: Check if package exists in Typst Universe
+        id: check-existing
+        if: steps.check-pr.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.TYPST_PACKAGES_PAT }}
+        run: |
+          # Check upstream main branch for existing package
+          if gh api repos/typst/packages/contents/packages/preview/mrbogo-cv --silent 2>/dev/null; then
+            echo "is_update=true" >> $GITHUB_OUTPUT
+            echo "Package already exists in Typst Universe - this is an update"
+          else
+            echo "is_update=false" >> $GITHUB_OUTPUT
+            echo "Package does not exist in Typst Universe - this is a new submission"
+          fi
+
+      - name: Create PR
+        id: create-pr
+        env:
+          GH_TOKEN: ${{ secrets.TYPST_PACKAGES_PAT }}
+          VERSION: ${{ inputs.version }}
+          EXISTING_PR_URL: ${{ steps.check-pr.outputs.url }}
+          PR_EXISTS: ${{ steps.check-pr.outputs.exists }}
+          IS_UPDATE: ${{ steps.check-existing.outputs.is_update }}
+        run: |
+          if [ "$PR_EXISTS" == "true" ]; then
+            echo "PR already exists: $EXISTING_PR_URL"
+            echo "pr_url=$EXISTING_PR_URL" >> $GITHUB_OUTPUT
+          else
+            # Determine submission type checkboxes
+            if [ "$IS_UPDATE" == "true" ]; then
+              NEW_PKG_CHECK="[ ]"
+              UPDATE_CHECK="[x]"
+              DESCRIPTION="Update mrbogo-cv to version $VERSION. See [release notes](https://github.com/MrBogomips/mrbogo-cv/releases/tag/v$VERSION) for changes."
+            else
+              NEW_PKG_CHECK="[x]"
+              UPDATE_CHECK="[ ]"
+              DESCRIPTION="A modern CV/resume template for Typst with content-template separation, multi-language support, and matching cover letter template. Inspired by Awesome CV."
+            fi
+
+            # Build PR body using printf to avoid YAML parsing issues with asterisks
+            PR_BODY=$(printf '%s\n' \
+              "I am submitting" \
+              "" \
+              "- $NEW_PKG_CHECK a new package" \
+              "- $UPDATE_CHECK an update for a package" \
+              "" \
+              "**Description:** $DESCRIPTION" \
+              "" \
+              "I have read and followed the [submission guidelines](https://github.com/typst/packages/blob/main/SUBMISSION_GUIDELINES.md) and, in particular, I" \
+              "" \
+              "- [x] selected a name that isn't the most obvious or canonical name for what the package does" \
+              "- [x] added a \`typst.toml\` file with all required keys" \
+              "- [x] added a \`README.md\` with documentation for my package" \
+              "- [x] have chosen a license and added a \`LICENSE\` file or linked one in my \`README.md\`" \
+              "- [x] tested my package locally on my system and it worked" \
+              "- [x] excluded PDFs or README images, if any, but not the LICENSE" \
+              "- [x] ensured that my package is licensed such that users can use and distribute the contents of its template directory without restriction, after modifying them through normal use." \
+              "" \
+              "---" \
+              "**Package:** [mrbogo-cv](https://github.com/MrBogomips/mrbogo-cv) v$VERSION")
+
+            PR_URL=$(gh pr create \
+              --repo typst/packages \
+              --base main \
+              --head "MrBogomips:mrbogo-cv-$VERSION" \
+              --title "mrbogo-cv:$VERSION" \
+              --body "$PR_BODY")
+            echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+          fi
+
+  notify:
+    needs: create-pr
+    runs-on: ubuntu-latest
+    if: always() && needs.create-pr.result == 'success'
+    permissions:
+      issues: write
+    steps:
+      - name: Check if tracking issue exists
+        id: check-issue
+        uses: actions/github-script@v7
+        env:
+          PKG_VERSION: ${{ inputs.version }}
+        with:
+          script: |
+            const version = process.env.PKG_VERSION;
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'typst-universe'
+            });
+            const existing = issues.data.find(i => i.title.includes(version));
+            if (existing) {
+              core.setOutput('exists', 'true');
+              core.setOutput('url', existing.html_url);
+            } else {
+              core.setOutput('exists', 'false');
+            }
+
+      - name: Create tracking issue
+        if: steps.check-issue.outputs.exists != 'true' && needs.create-pr.outputs.pr_exists != 'true'
+        uses: actions/github-script@v7
+        env:
+          PR_URL: ${{ needs.create-pr.outputs.pr_url }}
+          PKG_VERSION: ${{ inputs.version }}
+        with:
+          script: |
+            const prUrl = process.env.PR_URL;
+            const version = process.env.PKG_VERSION;
+            const body = [
+              `Package mrbogo-cv v${version} has been submitted to Typst Universe.`,
+              '',
+              `**PR:** ${prUrl}`,
+              '',
+              '**Next steps:**',
+              '1. Review the PR',
+              '2. Wait for Typst team review',
+              '3. Close this issue once merged',
+              '',
+              '---',
+              '_Automatically created by open-pr workflow_'
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Typst Universe submission: v${version}`,
+              body: body,
+              labels: ['typst-universe']
+            });
+
+      - name: Add to workflow summary
+        env:
+          VERSION: ${{ inputs.version }}
+          PR_URL: ${{ needs.create-pr.outputs.pr_url }}
+          PR_EXISTS: ${{ needs.create-pr.outputs.pr_exists }}
+        run: |
+          echo "## PR to Typst Packages" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** v$VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "**PR:** $PR_URL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$PR_EXISTS" == "true" ]; then
+            echo "> **Note:** PR already existed, no new PR was created." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "PR created successfully." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Review the PR and wait for Typst team approval." >> $GITHUB_STEP_SUMMARY

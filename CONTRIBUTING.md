@@ -140,3 +140,47 @@ mrbogo-cv/
 - Keep content separated from template logic
 - Use meaningful variable names
 - Add comments for complex logic
+
+## Publishing to Typst Universe
+
+The package is published to [Typst Universe](https://typst.app/universe/) via a two-step workflow:
+
+### Step 1: Create a Release (Automatic Sync)
+
+When you create a GitHub release with a semver tag (e.g., `v1.0.5`), the **Publish to Typst Packages** workflow automatically:
+
+1. Builds and validates the package
+2. Creates a package bundle and attaches it to the release
+3. Syncs the fork (`MrBogomips/typst-packages`) with upstream (`typst/packages`)
+4. Pushes the package to a release branch (`mrbogo-cv-1.0.5`)
+
+**To create a release:**
+```bash
+git tag v1.0.5
+git push origin v1.0.5
+# Then create a release on GitHub from the tag
+```
+
+### Step 2: Open PR (Manual)
+
+After the release workflow completes, manually trigger the **Open PR to Typst Packages** workflow:
+
+1. Go to **Actions** → **Open PR to Typst Packages**
+2. Click **Run workflow**
+3. Enter the version (e.g., `1.0.5`)
+4. Click **Run workflow**
+
+This creates a PR to `typst/packages` with the proper submission template and opens a tracking issue.
+
+### Why Two Steps?
+
+Separating sync from PR creation allows you to:
+- Review the fork state before creating the PR
+- Fix issues in the package without creating duplicate PRs
+- Control timing of the submission to Typst Universe
+
+### Required Secrets
+
+The workflows require a `TYPST_PACKAGES_PAT` secret with:
+- `repo` scope for pushing to the fork
+- Permission to create PRs on `typst/packages`
